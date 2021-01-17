@@ -27,6 +27,7 @@ y1 = random.randint(1, 10)
 # changes of cords
 d_row = 0
 d_col = 0
+snake_body = []
 
 timer = pygame.time.Clock()
 
@@ -63,8 +64,6 @@ def draw_blocks_snake(colour, row, column):
                               SIZE_OF_BLOCK,
                               SIZE_OF_BLOCK])
 
-
-snake_body = [[x1, y1]]
 
 while game_run:
     for event in pygame.event.get():
@@ -131,6 +130,14 @@ def food_draw(colour, food_x, food_y):
                               SIZE_OF_BLOCK])
 
 
+class SnakeBlock():
+    def __init__(self, x1, y1):
+        self.x1 = x1
+        self.y1 = y1
+
+
+snake_blocks = [SnakeBlock(9, 8), SnakeBlock(9, 9), SnakeBlock(9, 10)]
+
 if game_play:
     food_x = random.randint(1, 15)
     food_y = random.randint(1, 19)
@@ -175,14 +182,14 @@ if game_play:
                     up = False
                     down = False
 
+        if y1 > 19 or y1 < 0 or x1 > 15 or x1 < 0:
+            game_over = True
+
         x1 += d_row
         y1 += d_col
         snake_body = [[x1, y1]]
 
         # пусть игра заканчивается, когда змейка умирает:
-
-        if y1 > 19 or y1 < 1 or x1 > 15 or x1 < 1:
-            game_over = True
 
         screen.fill(FRAME_COLOUR)
         # нарисовали холст
@@ -193,35 +200,37 @@ if game_play:
         draw_blocks(LIGHT_BLUE, SIZE_OF_BLOCK, SIZE_OF_BLOCK)
         # нарисовали поле
 
+        food_draw(RED, food_x, food_y)
+
+        head = snake_blocks[-1]
+
+        new_head = SnakeBlock(head.x1 + d_row, head.y1 + d_col)
+        snake_blocks.append(new_head)
+        snake_blocks.pop(0)
+
         print(x1, y1)
-        print(snake_body)
+        print(snake_blocks)
         print('down:', down, 'up:', up, 'left:', left, 'right:', right)
-        if x1 == food_x and y1 == food_y:
-            # snake_body.append([x1, y1])
-            if up:
-                snake_body.append([x1, y1 + 1])
-            elif down:
-                snake_body.append([x1, y1 - 1])
-            elif right:
-                snake_body.append([x1 - 1, y1])
-            elif left:
-                snake_body.append([x1 + 1, y1])
+
+        if snake_blocks[-1] == (food_x, food_y):
+            snake_blocks.append([food_x, food_y])
             eaten = True
+        # draw_blocks_snake(COLOUR_OF_SNAKE, snake_body[0][0], snake_body[0][1])
 
-        draw_blocks_snake(COLOUR_OF_SNAKE, snake_body[0][0], snake_body[0][1])
-
-        for i in range(1, len(snake_body)):
-            for j in range(1, len(snake_body)):
-                draw_blocks_snake(COLOUR_OF_SNAKE, snake_body[i][j], snake_body[i][j + 1])
+        # for i in range(1, len(snake_body)):
+        #     for j in range(1, len(snake_body)):
+        #         draw_blocks_snake(COLOUR_OF_SNAKE, snake_body[i][j], snake_body[i][j + 1])
 
         if eaten:
             # если змейка съела еду, то создаем новую еду:
 
             food_x = random.randint(1, 15)
             food_y = random.randint(1, 19)
-            eaten = False
+            print('!!!')
 
-        food_draw(RED, food_x, food_y)
+            eaten = False
+        for block in snake_blocks:
+            draw_blocks_snake(COLOUR_OF_SNAKE, block.x1, block.y1)
 
         pygame.display.flip()
-        timer.tick(1)
+        timer.tick(5)
