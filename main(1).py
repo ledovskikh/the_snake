@@ -4,6 +4,7 @@ import random
 pygame.init()
 speed_game = 3
 score = 0
+scores = []
 
 menu_img = pygame.image.load('menu.jpeg')
 pygame.mixer.music.load('music.mp3')
@@ -69,7 +70,6 @@ def draw_blocks_snake(colour, row, column):
                               30 + row_ * SIZE_OF_BLOCK + MARG * (row_ + 1),
                               SIZE_OF_BLOCK,
                               SIZE_OF_BLOCK])
-
 
 while game_run:
     for event in pygame.event.get():
@@ -196,10 +196,6 @@ if game_play:
                     up = False
                     down = False
 
-        if y1 > 19 or y1 < 0 or x1 > 15 or x1 < 0:
-            game_over = True
-
-
         x1 += d_row
         y1 += d_col
         snake_body = [[x1, y1]]
@@ -228,7 +224,6 @@ if game_play:
         print(food_x, food_y)
 
         if tuple(snake_body[0]) == (food_x, food_y):
-
             print('!!!')
             score += 1
 
@@ -240,7 +235,6 @@ if game_play:
         #         draw_blocks_snake(COLOUR_OF_SNAKE, snake_body[i][j], snake_body[i][j + 1])
 
         if eaten:
-
             # если змейка съела еду, то создаем новую еду:
 
             snake_blocks.append(SnakeBlock(food_x, food_y))
@@ -261,5 +255,35 @@ if game_play:
         text_quit = pygame.font.Font(None, 50)
         text_q = text_quit.render('QUIT', True, (40, 192, 222))
         screen.blit(text_q, (550, 590))
+
+        if y1 > 19 or y1 < 0 or x1 > 15 or x1 < 0:
+
+            scores.append(score)
+            pygame.draw.rect(screen, RED, (170, 150, 300, 300))
+            go_out = pygame.font.Font(None, 50)
+            text_go = go_out.render("Сыграем еще?", True, (0, 64, 107))
+            screen.blit(text_go, (190, 170))
+            pygame.draw.rect(screen, (0, 128, 0), (180, 250, 100, 100))
+            pygame.draw.rect(screen, (0, 128, 0), (360, 250, 100, 100))
+            tx_yes = pygame.font.Font(None, 40)
+            tx_no = pygame.font.Font(None, 40)
+            text_yes = tx_yes.render("ДA", True, (0, 0, 0))
+            text_no = tx_yes.render("НЕТ", True, (0, 0, 0))
+            screen.blit(text_yes, (200, 270))
+            screen.blit(text_no, (380, 270))
+
+            for event in pygame.event.get():
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.pos[0] > 150 and \
+                            event.pos[1] > 230 and event.pos[0] < 250 and event.pos[1] < 380:
+
+                        # game_play = False
+                        # game_play = True
+                        print('!!')
+                    elif event.pos[0] > 340 and event.pos[0] < 450 and event.pos[1] > 230 and \
+                            event.pos[1] < 350:
+                        game_over = True
+        print(scores)
         pygame.display.flip()
         timer.tick(speed_game)
