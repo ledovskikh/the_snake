@@ -322,7 +322,7 @@ def game_p():
                             game_play = False  # пока True: открыто окно с самой игрой
                             game_over = False
                             print('!!')
-                        elif 340 < event.pos[0] < 450 and 230 < event.pos[1] < 350:
+                        elif 370 < event.pos[0] < 450 and 150 < event.pos[1] < 380:
                             scores.append(score)
                             print(scores)
                             score = 0
